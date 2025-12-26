@@ -1,0 +1,80 @@
+import telebot
+import random
+import time
+from datetime import datetime
+
+# Замени 'YOUR_TOKEN_HERE' на токен
+TOKEN = '8126310581:AAH9CpF_CxofJr5t_0bB6dDFyJB9MsPr5qc'
+bot = telebot.TeleBot(TOKEN)
+
+# 1. Хендлер для команды /start
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, "Привет! Я бот с 10 функциями. Напиши /help, чтобы узнать, что я умею.")
+
+# 2. Хендлер для команды /help
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    help_text = """
+    Я умею:
+    /hello - Приветствие
+    /fortune - Предсказание дня
+    /date = Текущая дата
+    /dice - Бросить игральный кубик
+    /coin - Бросить монетку (орел/решка)
+    /time - Текущее время
+    /random - Случайное число от 1 до 100
+    /photo - Случайное фото
+    /echo - Повторю твое сообщение
+    /info - Информация о тебе
+    /reverse - Переворачивает текст
+    """
+    bot.reply_to(message, help_text)
+
+@bot.message_handler(commands='hello')
+def send_hello(message):
+    bot.reply_to(message, "Привет!")
+
+@bot.message_handler(commands=['fortune'])
+def send_fortune(message):
+    
+    fortunes = [
+    "Тебя ждёт неудача",
+    "Тебя ждёт удача!!",
+    "ты не воч демо",
+    "ты воч демо",
+    "у тебя будет хороший день ",
+    "у тебя будет плохо день",
+    "у тебя будет всё как обычно"
+    ]
+
+    random_fortune = random.choice(fortunes)
+    bot.reply_to(message, {random_fortune} )
+
+@bot.message_handler(commands=['info'])
+def get_user_info(message):
+    user_id = message.from_user.id
+    first_name = message.from_user.first_name
+    bot.reply_to(message, f"Ваш ID: `{user_id}`\nВаше имя: {first_name}", parse_mode='Markdown')
+
+
+@bot.message_handler(commands=['time'])
+def ger_time(message):
+    current_time = datetime.now().strftime("%H:%M:%S")
+    bot.reply_to(message, f"Текущее время: {current_time}")
+
+
+@bot.message_handler(commands=['date'])
+def get_date(message):
+    today = datetime.now().strftime("%d.%m.%Y")
+    bot.reply_to(message, f"Сегодняшняя дата: {today}")
+
+
+
+
+# 14 Хендлер, который отвечает на любое текстовое сообщение (Эхо)
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    bot.reply_to(message, message.text)
+print("Бот запущен. Напиши /help, чтобы начать.")
+bot.polling(none_stop=True)
